@@ -1,0 +1,34 @@
+name: Chartix Screenshot
+
+on:
+  schedule:
+    - cron: "0 * * * *" # هر ساعت
+  workflow_dispatch: # اجرا دستی هم باشه
+
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+
+    - name: Install Playwright
+      run: |
+        npm install playwright axios
+
+    - name: Install browsers
+      run: |
+        npx playwright install --with-deps chromium
+
+    - name: Run Screenshot Script
+      env:
+        CHARTIX_COOKIE: ${{ secrets.CHARTIX_COOKIE }}
+        SYMBOL: ${{ secrets.SYMBOL }}
+        TIMEFRAME: ${{ secrets.TIMEFRAME }}
+        AI_TRADING_URL: ${{ secrets.AI_TRADING_URL }}
+      run: |
+        node chartix-screenshot.js
