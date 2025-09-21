@@ -1,0 +1,40 @@
+name: chartix-screenshot
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *' # هر ۶ ساعت یک بار
+
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Puppeteer
+        run: npm install puppeteer
+
+      - name: Run Puppeteer Script
+        run: node chartix.js
+        env:
+          CHARTIX_COOKIE: ${{ secrets.CHARTIX_COOKIE }}
+          SYMBOL: ${{ secrets.SYMBOL }}
+          TIMEFRAME: ${{ secrets.TIMEFRAME }}
+          DATE_FROM: ${{ secrets.DATE_FROM }}
+          DATE_TO: ${{ secrets.DATE_TO }}
+          COUNTBACK: ${{ secrets.COUNTBACK }}
+          CHARTIX_API_ID: ${{ secrets.CHARTIX_API_ID }}
+          AI_TRADING_URL: ${{ secrets.AI_TRADING_URL }}
+
+      - name: Upload screenshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: chartix-screenshot
+          path: screenshot.png
